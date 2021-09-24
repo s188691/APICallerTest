@@ -84,6 +84,7 @@ namespace APICallerTest
             if (response.IsSuccessStatusCode)
             {
                 progressBar1.Value = 100;
+                //To refactor?
             }
         }
     }
