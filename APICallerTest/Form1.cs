@@ -12,7 +12,7 @@ namespace APICallerTest
         private const string m_AppIDKey = "app-id";
         private const string m_AppIDValue = "614cba9854da1109414ccd6b";
         private HttpClient m_Client;
-        private APIData m_APIData;
+        private UsersMainData m_UsersMainData;
         public Form1()
         {
             InitializeComponent();
@@ -31,25 +31,36 @@ namespace APICallerTest
                 if (response.IsSuccessStatusCode)
                 {
                     string dataObject = response.Content.ReadAsStringAsync().Result;
-                    richTextBox1.Text = JsonConvert.DeserializeObject(dataObject).ToString();
 
+                    m_UsersMainData = new UsersMainData();
+                    m_UsersMainData = JsonConvert.DeserializeObject<UsersMainData>(dataObject);
 
-                    m_APIData = new APIData();
-                    m_APIData.APIDataObj = JsonConvert.DeserializeObject<string[]>(dataObject);
+                    for (int x = 0; x < m_UsersMainData.data.Length; x++)
+                    {
+                        string print = m_UsersMainData.data[x].firstName;
+                        PrintToRichTextBox(print);
+                    }
 
-                    richTextBox1.Text = m_APIData.APIDataObj[0];
-
-                    //APIDataObject m_APIOne = new APIDataObject();
-                    //m_APIOne.firstName = m_APIData.APIDataObj[0];
-                    //richTextBox1.Text = m_APIOne.firstName;
                 }
                 else
                 {
                     richTextBox1.Text =
-                        response.ReasonPhrase.ToString() + " " +
-                        response.Content.ReadAsStringAsync().Result;
+                        response.ReasonPhrase.ToString() + " " + response.Content.ReadAsStringAsync().Result;
                 }
             }
+        }
+
+        private void PrintToRichTextBox(string input)
+        {
+            if(!string.IsNullOrWhiteSpace(richTextBox1.Text))
+            {
+                richTextBox1.AppendText(Environment.NewLine + input);
+            }
+            else
+            {
+                richTextBox1.AppendText(input);
+            }
+            richTextBox1.ScrollToCaret();
         }
 
     }

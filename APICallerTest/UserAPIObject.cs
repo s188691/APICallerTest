@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace APICallerTest
 {
-    class APIData
+    class UsersMainData
     {
-        public string[] APIDataObj { get; set; }
+        public UsersDetailsData[] data { get; set; }
+        public int total { get; set; }
+        public int page { get; set; }
+        public int limit { get; set; }
     }
-    class APIDataObject
+    class UsersDetailsData
     {
         public string id { get; set; }
         public string title { get; set; }
@@ -20,14 +23,16 @@ namespace APICallerTest
     }
 }
 
+
+// Data presentation example
 //{
 //    "data": [
 //        {
 //        "id": "60d0fe4f5311236168a109ca",
-//            "title": "ms",
-//            "firstName": "Sara",
-//            "lastName": "Andersen",
-//            "picture": "https://randomuser.me/api/portraits/women/58.jpg"
+//        "title": "ms",
+//        "firstName": "Sara",
+//        "lastName": "Andersen",
+//        "picture": "https://randomuser.me/api/portraits/women/58.jpg"
 //        },
 //    ],
 //    "total": 99,
