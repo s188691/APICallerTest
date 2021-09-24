@@ -24,29 +24,27 @@ namespace APICallerTest
             m_Client.BaseAddress = new Uri(m_URL);
             m_Client.DefaultRequestHeaders.Add(m_AppIDKey, m_AppIDValue);
 
-            if (m_Client.DefaultRequestHeaders.Contains(m_AppIDKey))
+            HttpResponseMessage response = m_Client.GetAsync(m_UrlParameters).Result;
+
+            if (response.IsSuccessStatusCode)
             {
-                HttpResponseMessage response = m_Client.GetAsync(m_UrlParameters).Result;
+                string dataObject = response.Content.ReadAsStringAsync().Result;
 
-                if (response.IsSuccessStatusCode)
+                m_UsersMainData = new UsersMainData();
+                m_UsersMainData = JsonConvert.DeserializeObject<UsersMainData>(dataObject);
+
+                for (int x = 0; x < m_UsersMainData.data.Length; x++)
                 {
-                    string dataObject = response.Content.ReadAsStringAsync().Result;
-
-                    m_UsersMainData = new UsersMainData();
-                    m_UsersMainData = JsonConvert.DeserializeObject<UsersMainData>(dataObject);
-
-                    for (int x = 0; x < m_UsersMainData.data.Length; x++)
-                    {
-                        string print = m_UsersMainData.data[x].firstName;
-                        PrintToRichTextBox(print);
-                    }
-
+                    string print = m_UsersMainData.data[x].firstName;
+                    PrintToRichTextBox(print);
                 }
-                else
-                {
-                    richTextBox1.Text =
-                        response.ReasonPhrase.ToString() + " " + response.Content.ReadAsStringAsync().Result;
-                }
+
+            }
+            else
+            {
+                richTextBox1.Text =
+                    response.ReasonPhrase.ToString() + " " + 
+                    response.Content.ReadAsStringAsync().Result;
             }
         }
 
