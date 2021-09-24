@@ -2,29 +2,28 @@
 using System.Windows.Forms;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace APICallerTest
 {
     public partial class Form1 : Form
     {
-        private const string m_URL = "https://dummyapi.io/data/v1/";
-        private string m_UrlParameters = "user?page=1&limit=1";
-        private const string m_AppIDKey = "app-id";
-        private const string m_AppIDValue = "614cba9854da1109414ccd6b";
+        private const string m_URL = Helper.MAINURL;
+        private string m_GetUrlParameters = Helper.GETURLPARAMS;
+        private string m_PostUrlParameters = Helper.POSTURLPARAMS;
+        private const string m_AppIDKey = Helper.APPIDKEY;
+        private const string m_AppIDValue = Helper.APPIDVALUE;
         private HttpClient m_Client;
         private UsersMainData m_UsersMainData;
         public Form1()
         {
             InitializeComponent();
+            progressBar1.Value = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            m_Client = new HttpClient();
-            m_Client.BaseAddress = new Uri(m_URL);
-            m_Client.DefaultRequestHeaders.Add(m_AppIDKey, m_AppIDValue);
-
-            HttpResponseMessage response = m_Client.GetAsync(m_UrlParameters).Result;
+            HttpResponseMessage response = m_Client.GetAsync(m_GetUrlParameters).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -36,7 +35,7 @@ namespace APICallerTest
                 for (int x = 0; x < m_UsersMainData.data.Length; x++)
                 {
                     string print = m_UsersMainData.data[x].firstName;
-                    PrintToRichTextBox(print);
+                    PrintToRichTextBox(print, richTextBox1);
                 }
 
             }
@@ -48,18 +47,44 @@ namespace APICallerTest
             }
         }
 
-        private void PrintToRichTextBox(string input)
+        private void PrintToRichTextBox(string input, RichTextBox textBox)
         {
-            if(!string.IsNullOrWhiteSpace(richTextBox1.Text))
+            if(!string.IsNullOrWhiteSpace(textBox.Text))
             {
-                richTextBox1.AppendText(Environment.NewLine + input);
+                textBox.AppendText(Environment.NewLine + input);
             }
             else
             {
-                richTextBox1.AppendText(input);
+                textBox.AppendText(input);
             }
-            richTextBox1.ScrollToCaret();
+            textBox.ScrollToCaret();
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            CreatePost createPost = new CreatePost();
+            createPost.text = "Dogger oh ye";
+            createPost.image = @"https://peteu.b-cdn.net/wp-content/uploads/2019/10/Pupreme-the-dog-face-red-dog.jpg";
+            createPost.likes = 999;
+            createPost.tags[0] = "animal";
+            createPost.owner = "60d0fe4f5311236168a109ca";
+
+            var output = new StringContent(JsonConvert.SerializeObject(createPost), Encoding.UTF8, "application/json");
+            var response = m_Client.PostAsync(m_PostUrlParameters, output);
+
+            richTextBox2.Text = response.ToString();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            m_Client = new HttpClient();
+            m_Client.BaseAddress = new Uri(m_URL);
+            m_Client.DefaultRequestHeaders.Add(m_AppIDKey, m_AppIDValue);
+            HttpResponseMessage response = m_Client.GetAsync(@"https://dummyapi.io/data/v1/user/60d0fe4f5311236168a109ca").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                progressBar1.Value = 100;
+            }
+        }
     }
 }

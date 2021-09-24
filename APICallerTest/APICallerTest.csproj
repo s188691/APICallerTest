@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper.cs" />
+    <Compile Include="PostAPIObject.cs" />
     <Compile Include="UserAPIObject.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
