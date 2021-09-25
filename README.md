@@ -1,4 +1,4 @@
-# APICallerTest
+# API Caller Test
 
 In order to understand how to make GET and POST calls to API, operate with response and pass body I crated this very simple project.
 
