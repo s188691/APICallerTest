@@ -47,9 +47,48 @@ namespace APICallerTest
             }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            CreatePost createPost = new CreatePost();
+            createPost.text = "Dogger oh ye";
+            createPost.image = @"https://peteu.b-cdn.net/wp-content/uploads/2019/10/Pupreme-the-dog-face-red-dog.jpg";
+            createPost.likes = 999;
+            createPost.tags = new string[] {"animal", "shiba"};
+            createPost.owner = "60d0fe4f5311236168a109ca";
+
+            var output = new StringContent(JsonConvert.SerializeObject(createPost), Encoding.UTF8, "application/json");
+            var postCall = m_Client.PostAsync(m_PostUrlParameters, output);
+            string result = postCall.Result.Content.ReadAsStringAsync().Result;
+
+            //Could be deserialized into new Object that matches JSON structure
+            //to present response body data in nice way.
+
+            PrintToRichTextBox(result, richTextBox2);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            m_Client = new HttpClient();
+            m_Client.BaseAddress = new Uri(m_URL);
+            m_Client.DefaultRequestHeaders.Add(m_AppIDKey, m_AppIDValue);
+
+            // This part should use the simplest possible GET call.
+            HttpResponseMessage response = m_Client.GetAsync(@"https://dummyapi.io/data/v1/user/60d0fe4f5311236168a109ca").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                progressBar1.Value = 100;
+            }
+            else
+            {
+                button1.Enabled = false;
+                button2.Enabled = false;
+            }
+        }
+
+        #region Helper methods
         private void PrintToRichTextBox(string input, RichTextBox textBox)
         {
-            if(!string.IsNullOrWhiteSpace(textBox.Text))
+            if (!string.IsNullOrWhiteSpace(textBox.Text))
             {
                 textBox.AppendText(Environment.NewLine + input);
             }
@@ -59,33 +98,6 @@ namespace APICallerTest
             }
             textBox.ScrollToCaret();
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            CreatePost createPost = new CreatePost();
-            createPost.text = "Dogger oh ye";
-            createPost.image = @"https://peteu.b-cdn.net/wp-content/uploads/2019/10/Pupreme-the-dog-face-red-dog.jpg";
-            createPost.likes = 999;
-            createPost.tags[0] = "animal";
-            createPost.owner = "60d0fe4f5311236168a109ca";
-
-            var output = new StringContent(JsonConvert.SerializeObject(createPost), Encoding.UTF8, "application/json");
-            var response = m_Client.PostAsync(m_PostUrlParameters, output);
-
-            richTextBox2.Text = response.ToString();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            m_Client = new HttpClient();
-            m_Client.BaseAddress = new Uri(m_URL);
-            m_Client.DefaultRequestHeaders.Add(m_AppIDKey, m_AppIDValue);
-            HttpResponseMessage response = m_Client.GetAsync(@"https://dummyapi.io/data/v1/user/60d0fe4f5311236168a109ca").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                progressBar1.Value = 100;
-                //To refactor?
-            }
-        }
+        #endregion
     }
 }
